@@ -1,6 +1,6 @@
-import pygame
 import random
-import time
+
+import pygame
 
 
 class SnakeGame:
@@ -54,6 +54,21 @@ class SnakeGame:
             pygame.quit()
             exit()
 
+    def get_state_text(self):
+        state = ""
+        for y in range(self.height):
+            for x in range(self.width):
+                if (x, y) == self.snake[0]:
+                    state += "H"  # Head of the snake
+                elif (x, y) in self.snake[1:]:
+                    state += "B"  # Body of the snake
+                elif (x, y) == self.food:
+                    state += "F"  # Food
+                else:
+                    state += "."  # Empty cell
+            state += "\n"  # Newline after each row
+        return state
+
     def play(self):
         while True:
             for event in pygame.event.get():
@@ -69,12 +84,13 @@ class SnakeGame:
                         self.direction = (-1, 0)
                     elif event.key == pygame.K_RIGHT and self.direction != (-1, 0):
                         self.direction = (1, 0)
+                    self.move()  # Move the snake when a key is pressed
 
-            self.screen.fill((255, 255, 255))  # white background
+            self.screen.fill((255, 255, 255))  # White background
             self._draw_grid()
-            self.move()
             pygame.display.flip()
-            self.clock.tick(1)  # limit game to 1 FPS for simplicity
+            print(self.get_state_text())
+            self.clock.tick(10)  # Limit game to 10 FPS for responsiveness
 
 
 if __name__ == "__main__":
