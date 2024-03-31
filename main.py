@@ -2,6 +2,8 @@ import random
 
 import pygame
 
+from llm_service import get_llm_action
+
 
 class SnakeGame:
     def __init__(self, width=4, height=4, cell_size=30):
@@ -65,7 +67,7 @@ class SnakeGame:
                 elif (x, y) == self.food:
                     state += "F"  # Food
                 else:
-                    state += "."  # Empty cell
+                    state += "-"  # Empty cell
             state += "\n"  # Newline after each row
         return state
 
@@ -75,21 +77,24 @@ class SnakeGame:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP and self.direction != (0, 1):
-                        self.direction = (0, -1)
-                    elif event.key == pygame.K_DOWN and self.direction != (0, -1):
-                        self.direction = (0, 1)
-                    elif event.key == pygame.K_LEFT and self.direction != (1, 0):
-                        self.direction = (-1, 0)
-                    elif event.key == pygame.K_RIGHT and self.direction != (-1, 0):
-                        self.direction = (1, 0)
-                    self.move()  # Move the snake when a key is pressed
 
             self.screen.fill((255, 255, 255))  # White background
             self._draw_grid()
             pygame.display.flip()
-            print(self.get_state_text())
+
+            action = get_llm_action(self.get_state_text())
+            print(action)
+
+            if action == "up" and self.direction != (0, 1):
+                self.direction = (0, -1)
+            elif action == "down" and self.direction != (0, -1):
+                self.direction = (0, 1)
+            elif action == "left" and self.direction != (1, 0):
+                self.direction = (-1, 0)
+            elif action == "right" and self.direction != (-1, 0):
+                self.direction = (1, 0)
+
+            self.move()
             self.clock.tick(10)  # Limit game to 10 FPS for responsiveness
 
 
